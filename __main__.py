@@ -29,13 +29,18 @@ csv_docs=csv_to_doc(csv_path)
 client=PersistentClient(path=db_path)
 files_collection=client.create_collection(name='files_collection')
 
-load_pdfs(files_collection,pdf_doc,embedding)
 load_csvs(files_collection,csv_docs,embedding)
+load_pdfs(files_collection,pdf_doc,embedding)
 
 vector_store=Chroma(
     client=client,
     embedding_function=embedding,
     collection_name='files_collection')  
 
-prompt='Give me a summary about the company logistics'
+user_prompt='Give me a summary about the company logistics'
 
+pdf_prompt=PdfPrompt(user_prompt,vector_store,llm).agent_prompt()
+
+csv_prompt=f"Provide me statistical metrics and percentages about the following topic: '+{user_prompt}"
+csv_agent=CsvAgent(csv_prompt,vector_store,llm).run_agent()
+print(llm.invoke(pdf_prompt).content)
