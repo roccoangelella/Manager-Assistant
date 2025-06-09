@@ -59,16 +59,14 @@ This project is built on the principles of Retrieval-Augmented Generation (RAG).
 
 1.  **Clone the repository**:
     ```bash
-    git clone <your-repo-link>
-    cd <your-repo-folder>
+    git clone https://github.com/roccoangelella/Manager-Sidekick
     ```
 
 2.  **Install the required libraries**:
     ```bash
     pip install -r requirements.txt
     ```
-    *(Note: You'll need to create a `requirements.txt` file based on the imports in the Python scripts. Key libraries include `streamlit`, `langchain`, `langchain-chroma`, `chromadb`, `polars`, `google-generativeai`)*
-
+    
 3.  **Add your data**:
     * Place your PDF files in the `./data/pdf` directory.
     * Put your CSV files in the `./data/csv` directory.
