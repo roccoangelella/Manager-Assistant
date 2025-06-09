@@ -142,3 +142,4 @@ class PdfPrompt:
         new_prompt=f"You are an assistant for question-answering tasks in a dairy company called Case-Aria s.r.l. Use the following pieces of retrieved context to answer the question. Keep the answer concise. Question: {self.prompt}\nContext: {context}\nAnswer:\n"
 
         return new_prompt
+   
