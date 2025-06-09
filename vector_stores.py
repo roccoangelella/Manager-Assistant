@@ -9,7 +9,6 @@ import polars as pl
 
 db_path='./chroma_db'
 
-
 def Gemini_llm_embedding(api):
     os.environ["GOOGLE_API_KEY"]=api
     llm = init_chat_model("gemini-2.0-flash", model_provider="google_genai")
