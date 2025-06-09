@@ -1,89 +1,98 @@
-Bachelor Thesis Project: Manager Sidekick 📚
+# 📚 Manager Sidekick: A RAG-Powered Assistant
 
-Welcome to the GitHub repository for my bachelor thesis project, Manager Sidekick! This project is an exploration into leveraging Large Language Models (LLMs) and vector databases to create an intelligent assistant that can help a "manager" (or anyone, really!) interact with and gain insights from both PDF documents and CSV data.
+Welcome to the **Manager Sidekick** project! This is a bachelor thesis project designed to explore the power of Retrieval-Augmented Generation (RAG) in creating a helpful assistant for everyday managerial tasks. Think of it as a proof-of-concept and a learning journey rather than a production-ready application.
 
-As a learning project, I've focused on understanding the core concepts of Retrieval Augmented Generation (RAG), vector embeddings, and agentic workflows, all while building a functional Streamlit application. It's been a fantastic journey exploring how these modern AI tools can be pieced together to solve practical data challenges.
-✨ Features
+The core idea is to build a tool that can understand and answer questions based on a collection of documents (PDFs) and structured data (CSVs), making information access more intuitive and efficient.
 
-    PDF Document Q&amp;A: Ask questions about your PDF documents, and the system will retrieve relevant information to provide an answer.
-    CSV Data Interaction: Get insights from your CSV files by asking natural language questions.
-    Persistent Vector Store: Utilizes Chroma DB to store document embeddings, allowing for efficient retrieval and persistence across sessions.
-    Streamlit Interface: A user-friendly web interface built with Streamlit for easy interaction.
-    Modular Design: The codebase is structured to separate concerns like PDF loading, embedding, and agent logic, making it easier to understand and extend.
+***
 
-🚀 Getting Started
+## ✨ Key Features
 
-These instructions will help you set up and run the project on your local machine.
-Prerequisites
+* **Natural Language Queries**: Ask questions in plain English and get answers synthesized from your documents.
+* **Dual Data Source Interaction**: Seamlessly pulls information from both PDF files and CSV spreadsheets.
+* **PDF Document Analysis**: Leverages a Vector Store (ChromaDB) and embeddings (Google's Gemini) to find the most relevant information within your PDF documents.
+* **Smart CSV Data Handling**: Intelligently identifies the correct CSV file to query based on your prompt and uses a data agent to get you the answer.
+* **User-Friendly Interface**: A simple and interactive web interface built with Streamlit.
 
-Before you begin, make sure you have the following installed:
+***
 
-    Python 3.9+
-    pip (Python package installer)
+## 🚀 How It Works
 
-Installation
+This project is built on the principles of Retrieval-Augmented Generation (RAG). Here’s a quick rundown of the workflow:
 
-    Clone the repository:
-    Bash
+1.  **Data Ingestion & Embedding**:
+    * **PDFs**: When you point the application to a directory of PDF files, they are loaded, split into manageable chunks, and then converted into numerical representations (embeddings) using Google's Gemini embedding model. These embeddings are stored in a **ChromaDB** vector store, creating a searchable knowledge base.
+    * **CSVs**: For CSV files, a descriptive summary of each file's content (file name and column headers) is generated and stored.
 
-    git clone https://github.com/your-username/manager-sidekick.git
-    cd manager-sidekick
+2.  **User Prompt**: You, the user, type a question into the Streamlit interface.
 
- ```
+3.  **Intelligent Routing & Retrieval**:
+    * The application first analyzes your prompt to determine if it relates to the content of the CSV files.
+    * Simultaneously, it uses your prompt to search the ChromaDB vector store for the most relevant chunks of text from the PDF documents.
 
-    Create a virtual environment (recommended):
-    Bash
+4.  **Response Generation**:
+    * **For PDFs**: The retrieved text chunks from the PDFs are passed, along with your original question, to the Gemini Large Language Model (LLM). The LLM then generates a coherent, human-like answer based on this context.
+    * **For CSVs**: If a relevant CSV file is identified, a specialized `Dataframe_agent` is employed to query the data and find the specific information you asked for.
 
-python -m venv venv
-source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+5.  **Displaying the Output**: The final answers from both the PDF analysis and the CSV query are displayed in the Streamlit interface.
 
-Install the dependencies:
-Bash
+***
 
+## 📂 Project Structure
+
+* `./data/pdf/`: The default directory where you should place your PDF files.
+* `./data/csv/`: The default directory for your CSV files.
+* `./chroma_db/`: This is where the ChromaDB persistent vector store will be created to save the PDF embeddings.
+* `main.py`: The main script that runs the Streamlit application.
+* `vector_stores.py`, `files_to_docs.py`, `agent.py`: Modules containing the core logic for handling embeddings, document processing, and agentic workflows.
+
+***
+
+## 🏁 Getting Started
+
+### Prerequisites
+
+* Python 3.8+
+* A Gemini API Key. You can obtain one from [Google AI Studio](https://aistudio.google.com/).
+
+### Installation & Setup
+
+1.  **Clone the repository**:
+    ```bash
+    git clone <your-repo-link>
+    cd <your-repo-folder>
+    ```
+
+2.  **Install the required libraries**:
+    ```bash
     pip install -r requirements.txt
+    ```
+    *(Note: You'll need to create a `requirements.txt` file based on the imports in the Python scripts. Key libraries include `streamlit`, `langchain`, `langchain-chroma`, `chromadb`, `polars`, `google-generativeai`)*
 
-    (You'll need to create a requirements.txt file from the import statements in the provided code. A quick way is to run pip freeze > requirements.txt after installing all necessary libraries manually, or install them one by one. Key libraries include langchain, chromadb, polars, streamlit, and google-generativeai.)
+3.  **Add your data**:
+    * Place your PDF files in the `./data/pdf` directory.
+    * Put your CSV files in the `./data/csv` directory.
 
-Data Setup
+### Running the Application
 
-    Create a data directory in the root of your project.
-    Inside data, create two subdirectories: pdf and csv.
-    Place your PDF documents in the data/pdf directory.
-    Place your CSV files in the data/csv directory.
-
-Running the Application
-
-    Obtain a Google Gemini API Key: This project uses the Google Gemini LLM. You'll need to get an API key from the Google AI Studio.
-
-    Run the Streamlit application:
-    Bash
-
+1.  **Execute the Streamlit app from your terminal**:
+    ```bash
     streamlit run main.py
+    ```
 
-    This will open the application in your web browser. You'll be prompted to enter your Gemini API key in the Streamlit interface.
+2.  **Enter your API Key**: The first time you run the app, it will prompt you to enter your Gemini API Key.
 
-🛠️ Project Structure
+3.  **Initialize the data**: Use the sidebar buttons to "update" the PDF and CSV documents. This will trigger the embedding process for your files.
 
-Here's a brief overview of the key files and their roles:
+4.  **Start asking questions!** 🗣️
 
-    main.py: The main Streamlit application file, orchestrating the UI and logic.
-    vector_stores.py: Handles the setup of the embedding model (Gemini) and the process of loading PDFs into the Chroma vector store.
-    files_to_docs.py: Contains functions for converting PDF files into document objects and for processing prompts related to CSV files.
-    agent.py: Defines the "agents" responsible for interacting with the PDF vector store and the CSV data.
-    ./data/pdf/: Directory to store your PDF documents.
-    ./data/csv/: Directory to store your CSV files.
-    ./chroma_db/: This directory will be created automatically to store your persistent Chroma vector database.
+***
 
-💡 Learning & Challenges
+## 💡 Usage
 
-This project has been an invaluable learning experience. Some of the key takeaways and challenges I've encountered include:
+Once the application is running:
 
-    Understanding Embeddings: Grasping how text is transformed into numerical vectors and how these vectors enable semantic search.
-    Vector Database Management: Learning to use Chroma DB for efficient storage and retrieval of embeddings.
-    Prompt Engineering: Crafting effective prompts to guide the LLM in understanding and responding to user queries.
-    Agentic Design: Experimenting with different approaches to combine LLM capabilities with external tools (like interacting with DataFrames).
-    Streamlit Development: Building an interactive and responsive user interface to make the project accessible.
+* **Update Data**: If you add new PDF or CSV files to their respective directories, click the "Click to update..." buttons in the sidebar to have the application process them.
+* **Chat Interface**: Type your questions into the chat input box at the bottom of the page and press Enter. The assistant will then process your request and provide an answer based on the documents it has access to.
 
-It's truly fascinating to see how powerful LLMs can be when combined with well-structured data retrieval. I'm excited to continue exploring this field!
-
-Feel free to open issues or suggest improvements! This is a learning journey, and all feedback is welcome.
+Enjoy exploring the capabilities of RAG with your own documents!
