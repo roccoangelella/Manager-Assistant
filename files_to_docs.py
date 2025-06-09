@@ -52,3 +52,4 @@ def prompt_to_csv(user_prompt:str,llm)->str:
         if csv_file[-1]=='.':
             csv_file=csv_file[0:-1]
     return csv_file
+    
