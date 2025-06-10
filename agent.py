@@ -83,35 +83,112 @@ def Dataframe_agent(file_path,prompt,api):
 
     llm,embedding=Gemini_llm_embedding(api)
 
+
     @tool
     def load_csv(csv_path:str)->str:
         '''Load a csv file and save it as a dataframe'''
-        csv_path = csv_path.replace("_", " ")
-        df=pd.read_csv(csv_path)
-        df_store["df"]=df
-        return f"File loaded as a dataframe"
+        csv_path=csv_path.replace("_", " ")
+        try:
+            df=pd.read_csv(csv_path)
+            df_store["df"]=df
+            return f"File loaded successfully as a dataframe with {len(df)} rows and {len(df.columns)} columns"
+        except Exception as e:
+            return f"Error loading file: {str(e)}"
+    
+    @tool
+    def count_elem(col: str) -> str:
+        '''Counts each time an element appears in a column'''
+        try:
+            if "df" not in df_store:
+                return "Error: No dataframe loaded. Please load a CSV file first."
+            if col not in df_store['df'].columns:
+                available_cols = df_store['df'].columns.tolist()
+                return f"Error: Column '{col}' not found. Available columns: {available_cols}"
+            
+            counts = df_store['df'][col].value_counts().to_dict()
+            return f"Value counts for column '{col}': {counts}"
+        except Exception as e:
+            return f"Error counting elements: {str(e)}"
+
+    @tool
+    def most_pop_elem(col:str)->str:
+        '''Returns the most frequent value of a column'''
+        try:
+            if "df" not in df_store:
+                return "Error: No dataframe loaded. Please load a CSV file first."
+            if col not in df_store['df'].columns:
+                available_cols = df_store['df'].columns.tolist()
+                return f"Error: Column '{col}' not found. Available columns: {available_cols}"
+            
+            # Get the most frequent value using value_counts
+            most_frequent = df_store['df'][col].value_counts().index[0]
+            frequency = df_store['df'][col].value_counts().iloc[0]
+            
+            return f"Most popular element in column '{col}': '{most_frequent}' (appears {frequency} times)"
+        except Exception as e:
+            return f"Error finding most popular element: {str(e)}"
 
     @tool
     def get_columns(dummy:str)->str:
-        '''returns the columns of a dataframe'''
-        return str(df_store['df'].columns.tolist())
+        '''Returns the columns of a dataframe'''
+        try:
+            if "df" not in df_store:
+                return "Error: No dataframe loaded. Please load a CSV file first."
+            columns=df_store['df'].columns.tolist()
+            return f"Available columns: {columns}"
+        except Exception as e:
+            return f"Error getting columns: {str(e)}"
 
     @tool
     def describe_csv(dummy:str)->str:
-        '''returns descriptive statistics'''
-        return df_store['df'].describe()
+        '''Returns descriptive statistics for the dataframe'''
+        try:
+            if "df" not in df_store:
+                return "Error: No dataframe loaded. Please load a CSV file first."
+            description=df_store['df'].describe()
+            return f"Descriptive statistics:\n{description.to_string()}"
+        except Exception as e:
+            return f"Error describing dataframe: {str(e)}"
 
     @tool
-    def average_col(col:str)->float:
-        '''returns the average value of a column'''
-        return df_store['df'][col].mean()
+    def average_col(col:str)->str:
+        '''Returns the average value of a column'''
+        try:
+            if "df" not in df_store:
+                return "Error: No dataframe loaded. Please load a CSV file first."
+            if col not in df_store['df'].columns:
+                available_cols = df_store['df'].columns.tolist()
+                return f"Error: Column '{col}' not found. Available columns: {available_cols}"
+            
+            # Check if column is numeric
+            if not pd.api.types.is_numeric_dtype(df_store['df'][col]):
+                return f"Error: Column '{col}' is not numeric. Cannot calculate average."
+            
+            avg=df_store['df'][col].mean()
+            return f"Average of column '{col}': {avg}"
+        except Exception as e:
+            return f"Error calculating average: {str(e)}"
 
     @tool
-    def st_dev_col(col:str)->float:
-        '''returns the standard deviaton of a column'''
-        return df_store['df'][col].std()
+    def st_dev_col(col:str)->str:
+        '''Returns the standard deviation of a column'''
+        try:
+            if "df" not in df_store:
+                return "Error: No dataframe loaded. Please load a CSV file first."
+            if col not in df_store['df'].columns:
+                available_cols = df_store['df'].columns.tolist()
+                return f"Error: Column '{col}' not found. Available columns: {available_cols}"
+            
+            # Check if column is numeric
+            if not pd.api.types.is_numeric_dtype(df_store['df'][col]):
+                return f"Error: Column '{col}' is not numeric. Cannot calculate standard deviation."
+            
+            std=df_store['df'][col].std()
+            return f"Standard deviation of column '{col}': {std}"
+        except Exception as e:
+            return f"Error calculating standard deviation: {str(e)}"
 
-    tools=[st_dev_col,average_col,describe_csv,get_columns,load_csv]
+    tools=[st_dev_col,average_col,describe_csv,get_columns,load_csv,count_elem,most_pop_elem]
 
     agent=initialize_agent(
         tools=tools,
@@ -142,4 +219,3 @@ class PdfPrompt:
         new_prompt=f"You are an assistant for question-answering tasks in a dairy company called Case-Aria s.r.l. Use the following pieces of retrieved context to answer the question. Keep the answer concise. Question: {self.prompt}\nContext: {context}\nAnswer:\n"
 
         return new_prompt
-   
