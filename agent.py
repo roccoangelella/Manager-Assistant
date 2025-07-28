@@ -1,8 +1,13 @@
 from langchain.agents import initialize_agent, tool
 from langchain.agents.agent_types import AgentType
-from vector_stores import Gemini_llm_embedding
+from vector_stores import gemini_llm
+from embedding import retrieve_doc
 
 import pandas as pd
+import pandas.api.types as ptypes
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
 
 csv_system_prompt="""
 You are a specialized data analysis agent designed to help users analyze CSV datasets using pandas DataFrames. Your role is to provide accurate, insightful analysis while being methodical and precise in your approach.
@@ -15,6 +20,7 @@ get_columns: Retrieve column names from the loaded DataFrame
 describe_csv: Generate descriptive statistics for all numeric columns
 average_col: Calculate the mean value of a specific column
 st_dev_col: Calculate the standard deviation of a specific column
+intelligent_plotter: Generates the most appropriate plot for one or two data columns to perform useful analysis.
 
 Operating Guidelines
 1. Always Load Data First
@@ -77,119 +83,187 @@ Important Notes
 Your goal is to make data analysis accessible and insightful, helping users understand their data through clear explanations and methodical analysis, strictly adhering to the specified output format.
 """
 
-
-def Dataframe_agent(file_path,prompt,api):
+def Dataframe_agent(file_path,prompt,llm):
     df_store={}
-
-    llm,embedding=Gemini_llm_embedding(api)
-
+    graphs=os.listdir("./Graphs")
+    if len(graphs)!=0:
+        os.remove(f"./Graphs/{graphs[0]}")
 
     @tool
-    def load_csv(csv_path:str)->str:
-        '''Load a csv file and save it as a dataframe'''
-        csv_path=csv_path.replace("_", " ")
+    def load_csv(csv_path: str) -> str:
+        '''Load a csv file and save it as a dataframe. This should be the first step.'''
+        csv_path = csv_path.replace("_", " ")
         try:
-            df=pd.read_csv(csv_path)
-            df_store["df"]=df
-            return f"File loaded successfully as a dataframe with {len(df)} rows and {len(df.columns)} columns"
+            df = pd.read_csv(csv_path)
+            # Store both the original and the working dataframe
+            df_store["original_df"] = df.copy()
+            df_store["df"] = df
+            return f"File '{csv_path}' loaded successfully as a dataframe with {len(df)} rows and {len(df.columns)} columns."
         except Exception as e:
             return f"Error loading file: {str(e)}"
-    
-    @tool
-    def count_elem(col: str) -> str:
-        '''Counts each time an element appears in a column'''
-        try:
-            if "df" not in df_store:
-                return "Error: No dataframe loaded. Please load a CSV file first."
-            if col not in df_store['df'].columns:
-                available_cols = df_store['df'].columns.tolist()
-                return f"Error: Column '{col}' not found. Available columns: {available_cols}"
-            
-            counts = df_store['df'][col].value_counts().to_dict()
-            return f"Value counts for column '{col}': {counts}"
-        except Exception as e:
-            return f"Error counting elements: {str(e)}"
 
     @tool
-    def most_pop_elem(col:str)->str:
-        '''Returns the most frequent value of a column'''
+    def get_columns(dummy: str) -> str:
+        '''Returns the columns of the current dataframe. Input is ignored.'''
+        if "df" not in df_store:
+            return "Error: No dataframe loaded. Please load a CSV file first."
         try:
-            if "df" not in df_store:
-                return "Error: No dataframe loaded. Please load a CSV file first."
-            if col not in df_store['df'].columns:
-                available_cols = df_store['df'].columns.tolist()
-                return f"Error: Column '{col}' not found. Available columns: {available_cols}"
-            
-            # Get the most frequent value using value_counts
-            most_frequent = df_store['df'][col].value_counts().index[0]
-            frequency = df_store['df'][col].value_counts().iloc[0]
-            
-            return f"Most popular element in column '{col}': '{most_frequent}' (appears {frequency} times)"
-        except Exception as e:
-            return f"Error finding most popular element: {str(e)}"
-
-    @tool
-    def get_columns(dummy:str)->str:
-        '''Returns the columns of a dataframe'''
-        try:
-            if "df" not in df_store:
-                return "Error: No dataframe loaded. Please load a CSV file first."
-            columns=df_store['df'].columns.tolist()
+            columns = df_store['df'].columns.tolist()
             return f"Available columns: {columns}"
         except Exception as e:
             return f"Error getting columns: {str(e)}"
+            
+    # --- NEW: Data Inspection Tools ---
+    
+    @tool
+    def show_head(dummy: str) -> str:
+        '''Shows the first 5 rows of the current dataframe. Input is ignored.'''
+        if "df" not in df_store:
+            return "Error: No dataframe loaded. Please load a CSV file first."
+        try:
+            return f"First 5 rows of the dataframe:\n{df_store['df'].head().to_string()}"
+        except Exception as e:
+            return f"Error showing head: {str(e)}"
 
     @tool
-    def describe_csv(dummy:str)->str:
-        '''Returns descriptive statistics for the dataframe'''
+    def get_info(dummy: str) -> str:
+        '''Returns a technical summary of the dataframe (columns, data types, non-null counts). Input is ignored.'''
+        if "df" not in df_store:
+            return "Error: No dataframe loaded. Please load a CSV file first."
         try:
-            if "df" not in df_store:
-                return "Error: No dataframe loaded. Please load a CSV file first."
-            description=df_store['df'].describe()
+            # Capture the output of df.info() as it prints to stdout
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                df_store['df'].info()
+            info_str = buf.getvalue()
+            return f"Dataframe Info:\n{info_str}"
+        except Exception as e:
+            return f"Error getting info: {str(e)}"
+    
+    # --- NEW: Filtering and State Management Tools ---
+
+    @tool
+    def filter_rows(query_str: str) -> str:
+        '''
+        Filters the dataframe based on a query string. The query must be in a format pandas.query() can understand (e.g., "Age > 30", "Country == 'USA'").
+        This action modifies the current dataframe. Use reset_dataframe to undo.
+        '''
+        if "df" not in df_store:
+            return "Error: No dataframe loaded. Please load a CSV file first."
+        try:
+            filtered_df = df_store['df'].query(query_str)
+            df_store['df'] = filtered_df # Update the working dataframe
+            if len(filtered_df) == 0:
+                return f"Dataframe filtered with query '{query_str}'. No rows remaining."
+            return f"Dataframe filtered with query '{query_str}'. {len(filtered_df)} rows remaining. Here are the first 5:\n{filtered_df.head().to_string()}"
+        except Exception as e:
+            return f"Error applying filter: {str(e)}. Please check your query syntax."
+            
+    @tool
+    def reset_dataframe(dummy: str) -> str:
+        '''Resets the dataframe to its original state, undoing any filtering. Input is ignored.'''
+        if "original_df" not in df_store:
+            return "Error: No original dataframe found. Please load a CSV file first."
+        try:
+            df_store["df"] = df_store["original_df"].copy()
+            return f"Dataframe has been reset to its original state with {len(df_store['df'])} rows."
+        except Exception as e:
+            return f"Error resetting dataframe: {str(e)}"
+
+    # --- Existing & NEW Statistical Tools ---
+
+    @tool
+    def describe_csv(dummy: str) -> str:
+        '''Returns descriptive statistics for the numeric columns in the dataframe. Input is ignored.'''
+        if "df" not in df_store:
+            return "Error: No dataframe loaded. Please load a CSV file first."
+        try:
+            description = df_store['df'].describe()
             return f"Descriptive statistics:\n{description.to_string()}"
         except Exception as e:
             return f"Error describing dataframe: {str(e)}"
 
     @tool
-    def average_col(col:str)->str:
-        '''Returns the average value of a column'''
+    def calculate_correlation(dummy: str) -> str:
+        '''Calculates and returns the correlation matrix for all numeric columns. Input is ignored.'''
+        if "df" not in df_store:
+            return "Error: No dataframe loaded. Please load a CSV file first."
         try:
-            if "df" not in df_store:
-                return "Error: No dataframe loaded. Please load a CSV file first."
-            if col not in df_store['df'].columns:
-                available_cols = df_store['df'].columns.tolist()
-                return f"Error: Column '{col}' not found. Available columns: {available_cols}"
-            
-            # Check if column is numeric
-            if not pd.api.types.is_numeric_dtype(df_store['df'][col]):
-                return f"Error: Column '{col}' is not numeric. Cannot calculate average."
-            
-            avg=df_store['df'][col].mean()
-            return f"Average of column '{col}': {avg}"
+            numeric_df = df_store['df'].select_dtypes(include=np.number)
+            if numeric_df.shape[1] < 2:
+                return "Error: Need at least two numeric columns to calculate correlation."
+            corr_matrix = numeric_df.corr()
+            return f"Correlation matrix:\n{corr_matrix.to_string()}"
         except Exception as e:
-            return f"Error calculating average: {str(e)}"
+            return f"Error calculating correlation: {str(e)}"
 
+    # --- Existing & NEW Plotting Tools ---
+    
     @tool
-    def st_dev_col(col:str)->str:
-        '''Returns the standard deviation of a column'''
+    def plot_column(col: str) -> str:
+        '''Creates a plot for a single column. It generates a histogram for numeric data and a bar chart for categorical data.'''
+        if "df" not in df_store:
+            return "Error: No dataframe loaded. Please load a CSV file first."
+        df = df_store['df']
+        if col not in df.columns:
+            return f"Error: Column '{col}' not found. Available columns: {df.columns.tolist()}"
+        
         try:
-            if "df" not in df_store:
-                return "Error: No dataframe loaded. Please load a CSV file first."
-            if col not in df_store['df'].columns:
-                available_cols = df_store['df'].columns.tolist()
-                return f"Error: Column '{col}' not found. Available columns: {available_cols}"
-            
-            # Check if column is numeric
-            if not pd.api.types.is_numeric_dtype(df_store['df'][col]):
-                return f"Error: Column '{col}' is not numeric. Cannot calculate standard deviation."
-            
-            std=df_store['df'][col].std()
-            return f"Standard deviation of column '{col}': {std}"
+            plt.figure(figsize=(10, 6))
+            sns.set_theme(style="whitegrid")
+
+            if pd.api.types.is_numeric_dtype(df[col]):
+                sns.histplot(data=df, x=col, kde=True)
+                plt.title(f'Distribution of {col}')
+                plot_type = 'histogram'
+            else:
+                counts = df[col].value_counts().nlargest(15)
+                sns.barplot(x=counts.index, y=counts.values)
+                plt.title(f'Top 15 Value Counts for {col}')
+                plt.xticks(rotation=45, ha='right')
+                plot_type = 'barchart'
+
+            save_path = f"./Graphs/{col.replace(' ', '_')}_{plot_type}.png"
+            plt.tight_layout()
+            plt.savefig(save_path)
+            plt.close()
+            return f"Plot for column '{col}' was successfully saved to {save_path}"
         except Exception as e:
-            return f"Error calculating standard deviation: {str(e)}"
+            return f"An error occurred while creating the plot: {str(e)}"
+    
+    @tool
+    def plot_scatter(columns_str: str) -> str:
+        '''Creates and saves a scatter plot between two numeric columns. Input must be 'column_x vs column_y'.'''
+        if "df" not in df_store:
+            return "Error: No dataframe loaded. Please load a CSV file first."
+        
+        try:
+            parts = columns_str.split(' vs ')
+            if len(parts) != 2:
+                return "Error: Invalid format. Please use 'column_x vs column_y'."
+            col_x, col_y = parts[0].strip(), parts[1].strip()
 
-    tools=[st_dev_col,average_col,describe_csv,get_columns,load_csv,count_elem,most_pop_elem]
+            df = df_store['df']
+            if col_x not in df.columns or col_y not in df.columns:
+                return f"Error: One or both columns not found. Available columns: {df.columns.tolist()}"
+            if not pd.api.types.is_numeric_dtype(df[col_x]) or not pd.api.types.is_numeric_dtype(df[col_y]):
+                return f"Error: Both columns must be numeric for a scatter plot."
 
+            plt.figure(figsize=(10, 6))
+            sns.set_theme(style="whitegrid")
+            sns.scatterplot(data=df, x=col_x, y=col_y)
+            plt.title(f'Scatter Plot of {col_x} vs {col_y}')
+            
+            save_path = f"./Graphs/{col_x}_vs_{col_y}_scatter.png"
+            plt.tight_layout()
+            plt.savefig(save_path)
+            plt.close()
+            
+            return f"Scatter plot for '{col_x}' vs '{col_y}' was successfully saved to {save_path}"
+        except Exception as e:
+            return f"An error occurred while creating the scatter plot: {str(e)}"
+
+    tools = [load_csv, get_columns, show_head, get_info, filter_rows,describe_csv, reset_dataframe, calculate_correlation, plot_scatter,plot_column]
     agent=initialize_agent(
         tools=tools,
         llm=llm,
@@ -197,25 +271,13 @@ def Dataframe_agent(file_path,prompt,api):
         verbose=False,
         handle_parsing_error=True
     )
-    full_prompt=f"{csv_system_prompt}\nThe user has asked: {prompt}\nThe designed file is {file_path}."
+    full_prompt=f"{csv_system_prompt}\nThe user has asked: {prompt}\nThe designed file is {file_path}. Provide an extensive statistical analysis of the csv file. After you exposed your analysis to the user, plot a graph."
     return agent.run(full_prompt)
 
-class PdfPrompt:
-    def __init__(self,prompt,vector_store,llm):
-        self.prompt=prompt
-        self.vector_store=vector_store
-        self.llm=llm
+def PDFagent(prompt,prompt_embedding,collection,source,llm):
+    context=retrieve_doc(prompt_embedding,collection,source,10)
+    new_prompt=f"You are an expert assistant for question-answering tasks in Case-Aria s.r.l., a dairy company. Based on the provided context, provide a comprehensive yet clear answer to the question. Elaborate sufficiently on key concepts and processes to ensure a full understanding, directly addressing all parts of the question, but don't be too verbose. Question:\n{prompt}\n\nContext:\n{context}\nAnswer:"
     
-    def retrieve_docs(self):
-        docs=self.vector_store.similarity_search(self.prompt,k=10,filter={'source':'pdf'})
-        return docs
-    
-    def agent_prompt(self):
-        docs=self.retrieve_docs()
-        context=""
-        for doc in docs:
-            context+=f'{doc}'
+    output=llm.invoke(new_prompt).content
+    return output
 
-        new_prompt=f"You are an assistant for question-answering tasks in a dairy company called Case-Aria s.r.l. Use the following pieces of retrieved context to answer the question. Keep the answer concise. Question: {self.prompt}\nContext: {context}\nAnswer:\n"
-
-        return new_prompt
