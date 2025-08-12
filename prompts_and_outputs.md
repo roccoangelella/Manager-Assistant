@@ -108,3 +108,4 @@
     Audit scores have a moderate variability.
     A histogram of NC Cost has been generated.
     Further analysis could focus on the causes of high NC Costs and the relationship between audit scores and NC Cost.
+<img width="970" height="548" alt="Quality_graph(2)" src="https://github.com/user-attachments/assets/3e1a42f7-ca04-469a-bb3e-6ef1c0206d9b" />
