@@ -20,6 +20,7 @@
     The essence of CASE-ARIA's Quality Assurance (QA) philosophy, beyond compliance, consistency, and competitiveness, lies in its quality culture.
     This culture emphasizes that quality is not just a matter of procedures or inspections, but a deeply ingrained corporate philosophy influencing decision-making, employee conduct, and stakeholder engagement at every level of the organization. 
     It's about building trust, safeguarding public health, ensuring long-term viability, and delivering on a promise of excellence.
+    
     This quality culture is fostered among employees through:
     1. Training and development programs: Ensuring staff understand and internalize QA principles.
     2. Cross-functional collaboration: Encouraging collaboration between QA, R&D, production, logistics, and sales to ensure quality is considered in every decision.
@@ -37,8 +38,8 @@
 
 ### RAG System Output:
     The primary objective of the Finance Department at Case-Aria s.r.l. is to ensure the company's sustainability and growth. This involves several key responsibilities, including compliance with financial regulations, maintaining a robust internal control framework to prevent financial irregularities, and supporting ESG (Environmental, Social, and Governance) initiatives.
-    The Finance Department monitors specific financial indicators, including:
     
+    The Finance Department monitors specific financial indicators, including:
     1. EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization): A measure of core operational profitability.
     2. Operating Cash Flow: Reflects actual cash generated from core activities, a vital indicator of sustainability.
     3. Liquidity Ratios: Evaluate the company’s ability to cover short-term liabilities.
@@ -48,8 +49,8 @@
 ### Gemini 2.0 Flash Output:
 
     The primary objective of the Finance Department at CASE-ARIA s.r.l. is to serve as the financial backbone of the organization, ensuring its financial health, operational efficiency, and ability to pursue and sustain strategic initiatives in both the short and long term.     It acts not only as a controller of cash flows and capital but also as a strategic advisor to executive leadership.
-    To achieve this, the department continuously monitors key financial indicators, including:
     
+    To achieve this, the department continuously monitors key financial indicators, including:
     1. Profitability ratios: These measure the company's ability to generate earnings relative to its revenue, operating costs, and balance sheet assets.
     2. Liquidity indicators: These assess the company's ability to meet its short-term obligations, especially during periods of market volatility or operational uncertainty.
     3. Cash position data: This provides real-time insights into the company's available cash and its movement.
