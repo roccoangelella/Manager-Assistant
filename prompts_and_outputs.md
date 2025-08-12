@@ -109,3 +109,8 @@
     A histogram of NC Cost has been generated.
     Further analysis could focus on the causes of high NC Costs and the relationship between audit scores and NC Cost.
 <img width="970" height="548" alt="Quality_graph(2)" src="https://github.com/user-attachments/assets/3e1a42f7-ca04-469a-bb3e-6ef1c0206d9b" />
+
+### Gemini 2.0 Flash Output:
+    Overall, the extensive and diverse nature of non-conformities strongly suggests that the company’s current quality control measures are insufficient.
+    This could lead to increased operational costs (due to rework, scrap, and warranty claims), decreased customer satisfaction, damage to brand reputation, and potential regulatory issues.
+    To improve, the company needs to conduct a thorough root cause analysis for each type of non-conformity and implement robust corrective and preventive actions across its entire quality management system.
