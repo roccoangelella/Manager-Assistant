@@ -1,3 +1,4 @@
+# PDF Files:
 ## Prompt #1:
     What are the three foundational pillars of our company’s marketing philosophy?
 
@@ -96,4 +97,14 @@
     2. BRC Global Standard for Food Safety: Emphasizes product safety, integrity, legality, and quality, especially for private label products.
     3. IFS Food: Provides a unified standard for auditing food manufacturers, particularly those involved in private label production, with a focus on food safety and quality systems.
 
+# CSV files:
 
+## Prompt #1:
+    Analyze the company quality control status. What can you find out?
+
+### RAG System Output:
+The company quality control data shows that non-conformity costs (NC Cost) have a high degree of variability, with some instances costing significantly more than others, as indicated by a standard deviation of 251.50 and a mean of 165.24.
+Most non-conformities have no costs recorded.
+Audit scores have a moderate variability.
+A histogram of NC Cost has been generated.
+Further analysis could focus on the causes of high NC Costs and the relationship between audit scores and NC Cost.
