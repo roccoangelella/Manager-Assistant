@@ -1,7 +1,7 @@
-#### User Prompt:
+### User Prompt:
 Beyond compliance, consistency, and competitiveness, what is the essence of CASE-ARIA’s Quality Assurance philosophy, and how is it fostered among employees?
 
-#### RAG System Output:
+### RAG System Output:
 
 The essence of CASE-ARIA's Quality Assurance (QA) philosophy, beyond compliance, consistency, and competitiveness, lies in the quality culture fostered among employees. This culture emphasizes the integration of scientific rigor, regulatory compliance, cultural heritage, and strategic foresight to build trust, safeguard public health, ensure long-term viability, and deliver on a promise of excellence. It is not merely about detecting faults.
 
