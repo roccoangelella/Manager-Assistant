@@ -78,4 +78,14 @@
     2. Planning shipments
     3. Supervising transport
     4. Maintaining perfect organization of the warehouses
+    
     The goal is to ensure that every product reaches the right place at the right time, while always maintaining its quality, optimizing costs, reducing delivery times, and ensuring maximum customer satisfaction. 
+
+## Prompt #4:
+    List the international standards with which CASE-ARIA’s Quality Assurance system is aligned.
+    
+### RAG System Output:
+    CASE-ARIA's Quality Assurance (QA) system is aligned with the following three internationally recognized standards:
+    1. ISO 22000: This international standard defines the requirements for a food safety management system, ensuring that food safety hazards are identified and controlled throughout the production process.
+    2. BRC Global Standard for Food Safety: This standard emphasizes product safety, integrity, legality, and quality, particularly important for private label products.
+    3. IFS Food: This provides a unified standard for auditing food manufacturers, especially those involved in private label production, focusing on food safety and quality systems. 
