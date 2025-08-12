@@ -114,3 +114,22 @@
     Overall, the extensive and diverse nature of non-conformities strongly suggests that the company’s current quality control measures are insufficient.
     This could lead to increased operational costs (due to rework, scrap, and warranty claims), decreased customer satisfaction, damage to brand reputation, and potential regulatory issues.
     To improve, the company needs to conduct a thorough root cause analysis for each type of non-conformity and implement robust corrective and preventive actions across its entire quality management system.
+
+## Prompt #2:
+    How is our export distributed among countries?
+
+### RAG System Output:
+    The export data is distributed among 8 countries: France (17.72%), Japan (16.46%), Canada (15.19%), USA (13.92%), Australia (11.39%), Germany (10.13%), Spain (7.59%), and United Kingdom (7.59%). A pie chart visualizing this distribution has been saved to ./Graphs/Destination Country barchart.png. 
+    This chart provides a clear visual representation of the relative export volumes to each destination country.
+<img width="912" height="778" alt="Destination_Country_piechart(1)" src="https://github.com/user-attachments/assets/4cdd00b3-7473-474a-a986-df60fb493ecc" />
+
+### Gemini 2.0 Flash Output:
+Based on the provided data, here’s the distribution of exports by country:
+USA: 10 shipments
+Japan: 10 shipments
+Canada: 8 shipments
+France: 10 shipments
+Germany: 7 shipments
+Australia: 6 shipments
+United Kingdom: 5 shipments
+Spain: 5 shipments
