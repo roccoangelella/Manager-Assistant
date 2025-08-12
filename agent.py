@@ -50,7 +50,7 @@ Operating Guidelines
    If data isn't loaded, guide the user to load it first.
 
 6. Communication Style
-   Be clear and concise in your explanations.
+   Be extensive and clear in your explanations.
    Use proper statistical terminology but explain it when necessary.
    Structure your responses logically (overview → specific findings → conclusions).
    Ask clarifying questions when the user's request is ambiguous.
@@ -87,7 +87,8 @@ def Dataframe_agent(file_path,prompt,llm):
     df_store={}
     graphs=os.listdir("./Graphs")
     if len(graphs)!=0:
-        os.remove(f"./Graphs/{graphs[0]}")
+        for x in range(len(graphs)):
+            os.remove(f"./Graphs/{graphs[x]}")
 
     @tool
     def load_csv(csv_path: str) -> str:
@@ -201,7 +202,7 @@ def Dataframe_agent(file_path,prompt,llm):
     
     @tool
     def plot_column(col: str) -> str:
-        '''Creates a plot for a single column. It generates a histogram for numeric data and a bar chart for categorical data.'''
+        '''Creates a plot for a single column. It generates a histogram for numeric data and a pie chart for categorical data. 🥧'''
         if "df" not in df_store:
             return "Error: No dataframe loaded. Please load a CSV file first."
         df = df_store['df']
@@ -209,19 +210,29 @@ def Dataframe_agent(file_path,prompt,llm):
             return f"Error: Column '{col}' not found. Available columns: {df.columns.tolist()}"
         
         try:
-            plt.figure(figsize=(10, 6))
+            plt.figure(figsize=(10, 8))
             sns.set_theme(style="whitegrid")
 
             if pd.api.types.is_numeric_dtype(df[col]):
+                # --- Histogram for Numeric Data ---
                 sns.histplot(data=df, x=col, kde=True)
                 plt.title(f'Distribution of {col}')
                 plot_type = 'histogram'
             else:
-                counts = df[col].value_counts().nlargest(15)
-                sns.barplot(x=counts.index, y=counts.values)
-                plt.title(f'Top 15 Value Counts for {col}')
-                plt.xticks(rotation=45, ha='right')
-                plot_type = 'barchart'
+                # --- Pie Chart for Categorical Data ---
+                all_counts = df[col].value_counts()
+                top_counts = all_counts.nlargest(10)
+                
+                # If there are more than 10 categories, group the rest into 'Other'
+                if len(all_counts) > 10:
+                    other_sum = all_counts.iloc[10:].sum()
+                    top_counts['Other'] = other_sum
+                
+                plt.pie(top_counts, labels=top_counts.index, autopct='%1.1f%%', startangle=90)
+                plt.title(f'Proportion of Top 10 Categories in {col}')
+                plt.ylabel('') # Hides default y-label for pie charts
+                plt.axis('equal')  # Ensures the pie chart is a circle
+                plot_type = 'piechart'
 
             save_path = f"./Graphs/{col.replace(' ', '_')}_{plot_type}.png"
             plt.tight_layout()
@@ -262,8 +273,21 @@ def Dataframe_agent(file_path,prompt,llm):
             return f"Scatter plot for '{col_x}' vs '{col_y}' was successfully saved to {save_path}"
         except Exception as e:
             return f"An error occurred while creating the scatter plot: {str(e)}"
+    @tool
+    def get_value_percentages(col_name: str) -> str:
+        '''Calculates and returns the percentage of each unique value in a specified column. Useful for categorical data.'''
+        if "df" not in df_store:
+            return "Error: No dataframe loaded. Please load a CSV file first."
+        df = df_store['df']
+        if col_name not in df.columns:
+            return f"Error: Column '{col_name}' not found. Available columns: {df.columns.tolist()}"
+        try:
+            percentages = df[col_name].value_counts(normalize=True).mul(100).round(2)
+            return f"Value percentages for column '{col_name}':\n{percentages.to_string()}"
+        except Exception as e:
+            return f"Error calculating value percentages for column '{col_name}': {str(e)}"
 
-    tools = [load_csv, get_columns, show_head, get_info, filter_rows,describe_csv, reset_dataframe, calculate_correlation, plot_scatter,plot_column]
+    tools = [load_csv, get_columns, show_head, get_info, filter_rows,describe_csv, reset_dataframe, calculate_correlation, plot_scatter,plot_column,get_value_percentages]
     agent=initialize_agent(
         tools=tools,
         llm=llm,
@@ -275,7 +299,7 @@ def Dataframe_agent(file_path,prompt,llm):
     return agent.run(full_prompt)
 
 def PDFagent(prompt,prompt_embedding,collection,source,llm):
-    context=retrieve_doc(prompt_embedding,collection,source,10)
+    context=retrieve_doc(prompt_embedding,collection,source,20)
     new_prompt=f"You are an expert assistant for question-answering tasks in Case-Aria s.r.l., a dairy company. Based on the provided context, provide a comprehensive yet clear answer to the question. Elaborate sufficiently on key concepts and processes to ensure a full understanding, directly addressing all parts of the question, but don't be too verbose. Question:\n{prompt}\n\nContext:\n{context}\nAnswer:"
     
     output=llm.invoke(new_prompt).content
