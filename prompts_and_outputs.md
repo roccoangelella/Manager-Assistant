@@ -56,4 +56,26 @@
     3. Cash position data: This provides real-time insights into the company's available cash and its movement.
     4. Behavior of costs: This involves a special focus on fixed, variable, and semi-variable costs.
     5. Cost control benchmarks: These are established to measure and manage expenses effectively.
-    6. Break-even point: This calculation determines the sales volume at which total costs and total revenues are equal, meaning there is no net loss or gain. Output Format: 
+    6. Break-even point: This calculation determines the sales volume at which total costs and total revenues are equal, meaning there is no net loss or gain.
+
+## Prompt #4:
+    According to the text, what is considered the ”beating heart of the organization” at CASE-ARIA s.r.l., and what is its mission?
+
+### RAG System Output:
+    According to the text, the logistics department of CASE-ARIA s.r.l. is considered the "beating heart of the organization." Its mission is centered around coordination and management, specifically:
+    1. Managing inventory
+    2. Planning shipments
+    3. Supervising transport
+    4. Maintaining perfect organization of the warehouses
+    
+    These activities are vital for the smooth functioning of the entire company. The goal is to ensure that every product reaches the right place at the right time, while maintaining its quality. 
+    
+### Gemini 2.0 Flash Output:
+    According to the provided text, the logistics department is considered the "beating heart of the organization" at CASE-ARIA s.r.l.
+    
+    Its mission is not just to move products, but to ensure coordination and management of all material and product flows. This includes:
+    1. Managing inventory
+    2. Planning shipments
+    3. Supervising transport
+    4. Maintaining perfect organization of the warehouses
+    The goal is to ensure that every product reaches the right place at the right time, while always maintaining its quality, optimizing costs, reducing delivery times, and ensuring maximum customer satisfaction. 
