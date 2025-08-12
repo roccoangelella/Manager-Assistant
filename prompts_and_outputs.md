@@ -108,7 +108,7 @@
     Audit scores have a moderate variability.
     A histogram of NC Cost has been generated.
     Further analysis could focus on the causes of high NC Costs and the relationship between audit scores and NC Cost.
-<img width="970" height="548" alt="Quality_graph(2)" src="https://github.com/user-attachments/assets/3e1a42f7-ca04-469a-bb3e-6ef1c0206d9b" />
+<img width="800" height="480" alt="Quality_graph(2)" src="https://github.com/user-attachments/assets/3e1a42f7-ca04-469a-bb3e-6ef1c0206d9b" />
 
 ### Gemini 2.0 Flash Output:
     Overall, the extensive and diverse nature of non-conformities strongly suggests that the company’s current quality control measures are insufficient.
@@ -121,15 +121,15 @@
 ### RAG System Output:
     The export data is distributed among 8 countries: France (17.72%), Japan (16.46%), Canada (15.19%), USA (13.92%), Australia (11.39%), Germany (10.13%), Spain (7.59%), and United Kingdom (7.59%). A pie chart visualizing this distribution has been saved to ./Graphs/Destination Country barchart.png. 
     This chart provides a clear visual representation of the relative export volumes to each destination country.
-<img width="912" height="778" alt="Destination_Country_piechart(1)" src="https://github.com/user-attachments/assets/4cdd00b3-7473-474a-a986-df60fb493ecc" />
+<img width="800" height="480" alt="Destination_Country_piechart(1)" src="https://github.com/user-attachments/assets/4cdd00b3-7473-474a-a986-df60fb493ecc" />
 
 ### Gemini 2.0 Flash Output:
-Based on the provided data, here’s the distribution of exports by country:
-USA: 10 shipments
-Japan: 10 shipments
-Canada: 8 shipments
-France: 10 shipments
-Germany: 7 shipments
-Australia: 6 shipments
-United Kingdom: 5 shipments
-Spain: 5 shipments
+    Based on the provided data, here’s the distribution of exports by country:
+    USA: 10 shipments
+    Japan: 10 shipments
+    Canada: 8 shipments
+    France: 10 shipments
+    Germany: 7 shipments
+    Australia: 6 shipments
+    United Kingdom: 5 shipments
+    Spain: 5 shipments
