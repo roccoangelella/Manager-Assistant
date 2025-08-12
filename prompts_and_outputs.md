@@ -33,4 +33,20 @@
     This culture is further reinforced by leadership commitment to QA reviews, audits, and strategy setting. 
 
 ## Prompt #3:
-    
+    What is the primary objective of the Finance Department at CASE-ARIA s.r.l., and what specific financial indicators does it monitor?
+
+### RAG System Output:
+The primary objective of the Finance Department at Case-Aria s.r.l. is to ensure the company's sustainability and growth. This involves several key responsibilities, including compliance with financial regulations, maintaining a robust internal control framework to prevent financial irregularities, and supporting ESG (Environmental, Social, and Governance) initiatives.
+
+The Finance Department monitors specific financial indicators, including:
+1. EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization): A measure of core operational profitability.
+
+2. Operating Cash Flow: Reflects actual cash generated from core activities, a vital indicator of sustainability.
+
+3. Liquidity Ratios: Evaluate the company’s ability to cover short-term liabilities.
+
+4. Inventory Turnover: Indicates the efficiency of inventory management and product movement.
+In addition to these KPIs, the Finance Department also utilizes a cash budget to forecast cash inflows and outflows, monitoring liquidity risk and planning for borrowing or investing excess cash. They also employ financial evaluation tools such as Net Present Value (NPV), Internal Rate of Return (IRR), Payback Period, and Profitability Index. 
+
+### Gemini 2.0 Flash Output:
+
