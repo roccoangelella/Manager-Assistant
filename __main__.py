@@ -105,7 +105,10 @@ def main():
             st.write(csv_response)
             graph=os.listdir('./Graphs')
             if len(graph)!=0:
-                st.image(f'./Graphs/{graph[0]}')
+                for x in range(len(graph)):
+                    st.image(f'./Graphs/{graph[x]}')
 
 if __name__=='__main__':
     main()
+
+#streamlit run c:/Users/rocch/Desktop/Tesi/__main__.py
