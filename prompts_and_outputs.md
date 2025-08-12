@@ -4,7 +4,7 @@
 ### RAG System Output:
 
     The three foundational pillars of CASE-ARIA's marketing philosophy are:
-    -Product Authenticity: Emphasizing artisanal processes, local sourcing of ingredients, and traditional Italian cheesemaking techniques.
-    -Brand Management: Crafting a consistent identity across all touchpoints, ensuring recognition for quality, authenticity, and innovation.
-    -Market Research and Analytics: Gathering actionable insights through focus groups, sales data, competitor analysis, and trend monitoring.
+    - Product Authenticity: Emphasizing artisanal processes, local sourcing of ingredients, and traditional Italian cheesemaking techniques.
+    - Brand Management: Crafting a consistent identity across all touchpoints, ensuring recognition for quality, authenticity, and innovation.
+    - Market Research and Analytics: Gathering actionable insights through focus groups, sales data, competitor analysis, and trend monitoring.
         
